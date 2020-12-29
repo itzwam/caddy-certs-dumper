@@ -1,4 +1,4 @@
-# traefik-certs-dumper
+# caddy-certs-dumper
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/humenius/traefik-certs-dumper?logo=docker&style=flat)](https://hub.docker.com/r/humenius/traefik-certs-dumper)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/humenius/traefik-certs-dumper?sort=semver&style=flat)](https://hub.docker.com/r/humenius/traefik-certs-dumper)
@@ -36,8 +36,8 @@ version: '3.7'
 
 services:
   certdumper:
-    image: humenius/traefik-certs-dumper:latest
-    container_name: traefik_certdumper
+    image: antoinux/caddy-certs-dumper:latest
+    container_name: caddy_certdumper
     volumes:
     - ./traefik/acme:/traefik:ro
     - ./output:/output:rw
@@ -52,8 +52,8 @@ version: '3.7'
 
 services:
   certdumper:
-    image: humenius/traefik-certs-dumper:latest
-    container_name: traefik_certdumper
+    image: antoinux/caddy-certs-dumper:latest
+    container_name: caddy_certdumper
     command: --restart-containers container1,container2,container3
     volumes:
     - ./traefik/acme:/traefik:ro
@@ -72,8 +72,8 @@ version: '3.7'
 
 services:
   certdumper:
-    image: humenius/traefik-certs-dumper:latest
-    container_name: traefik_certdumper
+    image: antoinux/caddy-certs-dumper:latest
+    container_name: caddy_certdumper
     command: --restart-containers container1,container2,container3
     volumes:
     - ./traefik/acme:/traefik:ro
@@ -96,8 +96,8 @@ version: '3.7'
 
 services:
   certdumper:
-    image: humenius/traefik-certs-dumper:latest
-    container_name: traefik_certdumper
+    image: antoinux/caddy-certs-dumper:latest
+    container_name: caddy_certdumper
     volumes:
     - ./traefik/acme:/traefik:ro
     - ./output:/output:rw
@@ -115,8 +115,8 @@ version: '3.7'
 
 services:
   certdumper:
-    image: humenius/traefik-certs-dumper:latest
-    container_name: traefik_certdumper
+    image: antoinux/caddy-certs-dumper:latest
+    container_name: caddy_certdumper
     volumes:
     - ./traefik/acme:/traefik:ro
     - ./output:/output:rw
