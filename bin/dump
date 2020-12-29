@@ -9,34 +9,22 @@ re='^[0-9]+$'
 ###############################################
 
 dump() {
-  log "Clearing dumping directory"
-  rm -rf ${workdir}/*
-
   log "Dumping certificates"
-  traefik-certs-dumper file \
-    --version v2 \
-    --crt-name "cert" \
-    --crt-ext ".pem" \
-    --key-name "key" \
-    --key-ext ".pem" \
-    --domain-subdir \
-    --dest /tmp/work \
-    --source /traefik/acme.json >/dev/null
 
   if [ "${#DOMAINS[@]}" -gt 1 ]; then
     for i in "${DOMAINS[@]}" ; do
       if
-        [[ -f ${workdir}/${i}/cert.pem && -f ${workdir}/${i}/key.pem ]]
+        [[ -f ${workdir}/${i}/${i}.crt && -f ${workdir}/${i}/${i}.key ]]
       then
         if [[ -f ${outputdir}/${i}/cert.pem && -f ${outputdir}/${i}/key.pem ]] && \
-           diff -q ${workdir}/$i/cert.pem ${outputdir}/$i/cert.pem >/dev/null && \
-           diff -q ${workdir}/$i/key.pem ${outputdir}/$i/key.pem >/dev/null
+           diff -q ${workdir}/$i/$i.crt ${outputdir}/$i/cert.pem >/dev/null && \
+           diff -q ${workdir}/$i/$i.key ${outputdir}/$i/key.pem >/dev/null
         then
           log "Certificate and key for '${i}' still up to date, doing nothing"
         else
           log "Certificate or key for '${i}' differ, updating"
           local dir=${outputdir}/${i}
-          mkdir -p ${dir} && mv ${workdir}/${i}/*.pem ${dir}
+          mkdir -p ${dir} && mv ${workdir}/${i}/${i}.{crt,key} ${dir}
           change_ownership
           restart_containers
         fi
@@ -46,16 +34,16 @@ dump() {
     done
   else
     if
-      [[ -f ${workdir}/${DOMAINS[0]}/cert.pem && -f ${workdir}/${DOMAINS[0]}/key.pem ]]
+      [[ -f ${workdir}/${DOMAINS[0]}/${DOMAINS[0]}.crt && -f ${workdir}/${DOMAINS[0]}/${DOMAINS[0]}.key ]]
     then
       if [[ -f ${outputdir}/cert.pem && -f ${outputdir}/key.pem ]] && \
-         diff -q ${workdir}/${DOMAINS[0]}/cert.pem ${outputdir}/cert.pem >/dev/null && \
-         diff -q ${workdir}/${DOMAINS[0]}/key.pem ${outputdir}/key.pem >/dev/null
+         diff -q ${workdir}/${DOMAINS[0]}/${DOMAINS[0]}.crt ${outputdir}/cert.pem >/dev/null && \
+         diff -q ${workdir}/${DOMAINS[0]}/${DOMAINS[0]}.key ${outputdir}/key.pem >/dev/null
       then
         log "Certificate and key for '${DOMAINS[0]}' still up to date, doing nothing"
       else
         log "Certificate or key for '${DOMAINS[0]}' differ, updating"
-        mv ${workdir}/${DOMAINS[0]}/*.pem ${outputdir}/
+        mv ${workdir}/${DOMAINS[0]}/${DOMAINS[0]}.{crt,key} ${outputdir}/
         change_ownership
         restart_containers
         restart_services
@@ -279,6 +267,6 @@ mkdir -p ${workdir}
 dump
 
 while true; do
-  inotifywait -qq -e modify /traefik/acme.json
+  inotifywait -qq -e modify -r /tmp/workdir/*-directory/
   dump
 done
